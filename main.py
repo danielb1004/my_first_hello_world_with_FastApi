@@ -1,8 +1,10 @@
 #Python
 from argparse import OPTIONAL
 from typing import Optional
+from enum import Enum
 #Pydantic
 from pydantic import BaseModel
+from pydantic import Field
 #FastApi
 from fastapi import FastAPI, Query
 from fastapi import Body, Query, Path
@@ -10,17 +12,37 @@ from fastapi import Body, Query, Path
 app = FastAPI()
 
 #Models
+class HairColor(Enum):
+    brown = "brown"
+    white = "white"
+    black = 'black'
+    blonde = 'blonde'
+    red = 'red'
+
+
 class Location(BaseModel):
     city: str
     state : str
     country : str
 
 class Person(BaseModel):
-    first_name: str
-    last_name: str
-    age: int
-    hair_color: Optional[str] = None
-    is_maried: Optional[bool] = None
+    first_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+        )
+    last_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+        )
+    age: int = Field(
+        ...,
+        ge=0,
+        le=150
+    )
+    hair_color: Optional[HairColor] = Field(default=None)
+    is_maried: Optional[bool] = Field(default=None)
 
 
 @app.get("/")
