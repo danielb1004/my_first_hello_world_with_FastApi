@@ -1,4 +1,5 @@
 # Python
+# from syslog import LOG_INFO
 from typing import Optional
 from enum import Enum
 
@@ -8,7 +9,7 @@ from pydantic import Field
 
 # FastAPI
 from fastapi import FastAPI
-from fastapi import Body, Query, Path
+from fastapi import Body, Query, Path, Form
 from fastapi import status
 
 app = FastAPI()
@@ -75,19 +76,11 @@ class Person(PersonBase):
     )
 
 class PersonOut(PersonBase):
-    pass
-       
-    #class Config:
-    #    schema_extra = {
-    #        "example": {
-    #            "first_name": "Facundo",
-    #            "last_name": "García Martoni",
-    #            "age": 29,
-    #            "hair_color": "blonde",
-    #            "is_married": False,
-    #        }
-    #    }
-
+    pass      
+ 
+class LoginOut(BaseModel):
+    username: str = Field(...,max_length=20, example="miguel2021")
+    message: str = Field(default="Login Successful")
 @app.get(
     path="/",
     status_code=status.HTTP_200_OK
@@ -158,3 +151,14 @@ def update_person(
     #results.update(location.dict())
     #return results
     return person 
+
+@app.post(
+    path="/login",
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+)
+def login(
+    username: str = Form(...),
+    password: str = Form(...)
+):
+    return LoginOut(username=username)
